@@ -3,12 +3,17 @@ package mgmt
 import (
 	"encoding/json"
 	"fmt"
+
 	"net/http"
 
 	"github.com/gen2brain/malgo"
 )
 
 var gCtx *malgo.AllocatedContext
+
+type ConfigRequest struct {
+	DeviceID string
+}
 
 func GetDevices() string {
 	devs, err := gCtx.Devices(malgo.Capture)
@@ -28,17 +33,29 @@ func GetDevices() string {
     }
 	return string(b)
 }
-func RunServer(ctx *malgo.AllocatedContext) {
+func RunServer(audio *Audio) {
 
-	gCtx = ctx
+	gCtx = audio.Context
 
 
 	fs := http.FileServer(http.Dir("./html")) 
 	http.Handle("/", fs)
+	// http.Get("/devices", func(w http.ResponseWriter, r *http.Request) {
+	// 	fmt.Fprint(w, GetDevices())
+	// })
 	http.HandleFunc("/devices", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			fmt.Fprint(w, GetDevices())
+		case "PUT":
+			var body ConfigRequest
+			err := json.NewDecoder(r.Body).Decode(&body)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				fmt.Fprintf(w, "Supplied body does not match expected format (ConfigRequest)")
+			}
+			fmt.Println(body.DeviceID)
+			audio.SetDevice(body.DeviceID)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			fmt.Fprintf(w, "Method not allowed")

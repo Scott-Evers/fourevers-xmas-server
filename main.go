@@ -12,6 +12,7 @@ import (
 
 func main() {
 	
+	// get audio context
 	ctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {
 		fmt.Printf("LOG <%v>\n", message)
 	})
@@ -23,8 +24,10 @@ func main() {
 		_ = ctx.Uninit()
 		ctx.Free()
 		}()
-		
-	mgmt.RunServer(ctx)
+	
+	audio := &mgmt.Audio{Context: ctx}
+	audio.SetDevice("default")
+	mgmt.RunServer(audio)
 
 	
 	// deviceConfig := malgo.DefaultDeviceConfig(malgo.Duplex)
