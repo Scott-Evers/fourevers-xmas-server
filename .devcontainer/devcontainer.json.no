@@ -1,0 +1,16 @@
+{
+    "image": "scottaevers/devcon_golang:latest",
+    "mounts": [],
+    "workspaceFolder": "/go/src/github.com/Scott-Evers/xmas",
+    "workspaceMount": "source=${localEnv:HOME}${localEnv:USERPROFILE}/projects/go,target=/go,type=bind,consistency=cached",
+    "containerEnv": {
+        "GOPATH": "/go"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.go"
+            ]
+        }
+    }
+}
